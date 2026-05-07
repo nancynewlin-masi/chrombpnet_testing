@@ -14,11 +14,15 @@ CHROMBPNET_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
 # Reference files (mouse GRCm38/mm10)
+#
+# Defaults point to the lab-shared copy under references/mm10/ (kept outside
+# git; see README). Override any path by exporting before sourcing.
 # =============================================================================
-GENOME_FA="${GENOME_FA:-/data1/peerd/sotougl/bulk_analysis/cnr_2025/genomes/GRCm38.primary_assembly.genome.fa}"
-CHROM_SIZES="${CHROM_SIZES:-/data1/peerd/sotougl/bulk_analysis/cnr_2025/genomes/genome.chromosome-sizes.txt}"
-BLACKLIST="${BLACKLIST:-/data1/peerd/sotougl/bulk_analysis/cnr_2025/blacklist/mm10.blacklist.bed}"
-MEME_DB="${MEME_DB:-/data1/peerd/sotougl/Software/chrombpnet/chrombpnet/data/motifs.meme.txt}"
+REFERENCES_DIR="${REFERENCES_DIR:-${CHROMBPNET_DIR}/references/mm10}"
+GENOME_FA="${GENOME_FA:-${REFERENCES_DIR}/GRCm38.primary_assembly.genome.fa}"
+CHROM_SIZES="${CHROM_SIZES:-${REFERENCES_DIR}/genome.chromosome-sizes.txt}"
+BLACKLIST="${BLACKLIST:-${REFERENCES_DIR}/mm10.blacklist.bed}"
+MEME_DB="${MEME_DB:-${REFERENCES_DIR}/motifs.meme.txt}"
 
 # =============================================================================
 # Output directories

@@ -1,5 +1,6 @@
-# Large input data — kept on the filesystem, not in git
+# Large input data and references — kept on the filesystem, not in git
 test_data/
+references/
 
 # Pipeline outputs and runtime state
 results/

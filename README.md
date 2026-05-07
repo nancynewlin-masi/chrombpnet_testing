@@ -67,8 +67,22 @@ The env is referenced **by name** (`chrombpnet`) in [config.sh](config.sh)
 and resolved against your own conda. Override with `ENV_CHROMBPNET=...` at
 submit time if you named it differently.
 
-The reference genome (mm10) and blacklist are pinned in [config.sh](config.sh).
-Override any path at submit time, e.g. `--genome /other/genome.fa`.
+The mm10 reference genome, chromosome sizes, blacklist, and MEME motif
+database are kept under `references/mm10/` (gitignored — too large for
+GitHub). The lab-shared copy lives at:
+
+```
+/data1/collab002/sail/shared/projects/peer-lab/chrombpnet_luis/references/mm10/
+├── GRCm38.primary_assembly.genome.fa        # 2.6 GB
+├── GRCm38.primary_assembly.genome.fa.fai    # samtools index
+├── genome.chromosome-sizes.txt
+├── mm10.blacklist.bed
+└── motifs.meme.txt
+```
+
+If your copy lives elsewhere, point [config.sh](config.sh) at it via the
+`REFERENCES_DIR` env var, or override individual paths at submit time
+(`--genome`, `--chrom-sizes`, `--blacklist`, or `MEME_DB=...`).
 
 ## Pipeline steps and runtimes
 
@@ -127,10 +141,11 @@ chrombpnet_luis/
 └── scripts/                 # s0–s5 step scripts + Python helpers
 ```
 
-The following directories are created at submit time and are gitignored:
+The following directories live on the filesystem (gitignored):
 
 ```
-test_data/                   # bigwigs + narrowPeaks (kept on the filesystem; see "Input data")
+test_data/                   # bigwigs + narrowPeaks (see "Input data")
+references/mm10/             # reference genome, blacklist, MEME motifs
 logs/                        # SLURM stdout/stderr
 slurm_jobs/                  # generated SLURM scripts
 submitted_jobs/              # submissions.log
