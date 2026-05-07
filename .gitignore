@@ -1,0 +1,22 @@
+# Large input data — kept on the filesystem, not in git
+test_data/
+
+# Pipeline outputs and runtime state
+results/
+logs/
+slurm_jobs/
+submitted_jobs/
+reports/
+
+# Editor / OS junk
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
