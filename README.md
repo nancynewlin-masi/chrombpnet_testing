@@ -1,3 +1,6 @@
+Fork for HPC Team to iterate on 
+HPC Team: Nancy, Erica, Jamie, Lohit
+
 # ChromBPNet Pipeline — D14 ATAC samples
 
 5-fold cross-validation ChromBPNet pipeline for three D14 ATAC samples. Trains
