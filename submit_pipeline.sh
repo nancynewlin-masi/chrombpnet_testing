@@ -202,6 +202,7 @@ STEP_LABEL[s3]="Contribution scores"
 STEP_LABEL[s4]="MoDISco motifs"
 STEP_LABEL[s5]="MoDISco reports"
 
+# Note for HPC team: change resource requests here
 STEP_GRES[s0]="gpu:1";          STEP_TIME[s0]="6:00:00";     STEP_CPUS[s0]=2;               STEP_MEM[s0]="16G"
 STEP_GRES[s1]="${SLURM_GRES}";  STEP_TIME[s1]="${SLURM_TIME}"; STEP_CPUS[s1]="${SLURM_CPUS}"; STEP_MEM[s1]="${SLURM_MEM}"
 STEP_GRES[s2]="${SLURM_GRES}";  STEP_TIME[s2]="${SLURM_TIME}"; STEP_CPUS[s2]="${SLURM_CPUS}"; STEP_MEM[s2]="${SLURM_MEM}"

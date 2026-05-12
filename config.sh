@@ -82,7 +82,7 @@ MODISCO_TOP_MATCHES="${MODISCO_TOP_MATCHES:-10}"
 # =============================================================================
 # SLURM defaults
 # =============================================================================
-PARTITION="${PARTITION:-peerd}"
+PARTITION="gpu" #"${PARTITION:-peerd}"
 SLURM_GRES="${SLURM_GRES:-gpu:a100:1}"
 SLURM_CPUS="${SLURM_CPUS:-4}"
 SLURM_MEM="${SLURM_MEM:-160G}"
