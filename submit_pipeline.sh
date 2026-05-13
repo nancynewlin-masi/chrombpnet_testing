@@ -49,7 +49,10 @@ ORIG_CMD="bash submit_pipeline.sh $*"
 # defaults to the lab-shared location below; override with the TEST_DATA_DIR
 # env var if your copy is elsewhere.
 # =============================================================================
-TEST_DATA_DIR="${TEST_DATA_DIR:-/data1/collab002/sail/shared/projects/peer-lab/chrombpnet_luis/test_data}"
+#TEST_DATA_DIR="${TEST_DATA_DIR:-/data1/collab002/sail/shared/projects/peer-lab/chrombpnet_luis/test_data}"
+# HPC: Test data location
+
+TEST_DATA_DIR="${TEST_DATA_DIR:-/data1/hpcadmin/newlinn/Proj_PeerBenchmark/test_data}"
 
 declare -A SAMPLE_BIGWIG SAMPLE_PEAKS
 SAMPLE_BIGWIG[D14_Ctrl_merged_new]="${TEST_DATA_DIR}/bigwig/D14_Ctrl_merged_cutsites.bw"
@@ -64,7 +67,7 @@ SAMPLE_PEAKS[D14_NL_merged_new]="${TEST_DATA_DIR}/macs3_peaks/D14_NL_merged_peak
 # =============================================================================
 # Parse arguments
 # =============================================================================
-DRY_RUN=false
+DRY_RUN=true #false
 CLI_NAME=""
 CLI_STEP="all"
 CLI_FOLD=""
@@ -203,12 +206,12 @@ STEP_LABEL[s4]="MoDISco motifs"
 STEP_LABEL[s5]="MoDISco reports"
 
 # Note for HPC team: change resource requests here
-STEP_GRES[s0]="gpu:1";          STEP_TIME[s0]="6:00:00";     STEP_CPUS[s0]=2;               STEP_MEM[s0]="16G"
+STEP_GRES[s0]="gpu:a100:1";          STEP_TIME[s0]="6:00:00";     STEP_CPUS[s0]=2;               STEP_MEM[s0]="16G"
 STEP_GRES[s1]="${SLURM_GRES}";  STEP_TIME[s1]="${SLURM_TIME}"; STEP_CPUS[s1]="${SLURM_CPUS}"; STEP_MEM[s1]="${SLURM_MEM}"
 STEP_GRES[s2]="${SLURM_GRES}";  STEP_TIME[s2]="${SLURM_TIME}"; STEP_CPUS[s2]="${SLURM_CPUS}"; STEP_MEM[s2]="${SLURM_MEM}"
 STEP_GRES[s3]="${SLURM_GRES}";  STEP_TIME[s3]="${SLURM_TIME}"; STEP_CPUS[s3]="${SLURM_CPUS}"; STEP_MEM[s3]="${SLURM_MEM}"
-STEP_GRES[s4]="gpu:1";          STEP_TIME[s4]="72:00:00";    STEP_CPUS[s4]="${SLURM_CPUS}"; STEP_MEM[s4]="${SLURM_MEM}"
-STEP_GRES[s5]="gpu:1";          STEP_TIME[s5]="4:00:00";     STEP_CPUS[s5]=2;               STEP_MEM[s5]="32G"
+STEP_GRES[s4]="gpu:a100:1";          STEP_TIME[s4]="72:00:00";    STEP_CPUS[s4]="${SLURM_CPUS}"; STEP_MEM[s4]="${SLURM_MEM}"
+STEP_GRES[s5]="gpu:a100:1";          STEP_TIME[s5]="4:00:00";     STEP_CPUS[s5]=2;               STEP_MEM[s5]="32G"
 
 # =============================================================================
 # Job generation and submission
@@ -238,6 +241,8 @@ generate_and_submit() {
     if [[ -n "${STEP_GRES[${step}]}" ]]; then gres_line="#SBATCH --gres=${STEP_GRES[${step}]}"; fi
 
     cat > "${script_path}" << SLURM_EOF
+
+    
 #!/bin/bash
 #SBATCH --job-name=${job_name}
 #SBATCH --output=${LOG_DIR}/${log_prefix}.out
@@ -289,6 +294,8 @@ SLURM_EOF
     fi
 }
 
+
+
 # =============================================================================
 # Submit
 # =============================================================================
@@ -311,6 +318,10 @@ declare -A LAST_JOBID
 for step in "${STEPS[@]}"; do
     echo "  ── Step ${step}: ${STEP_LABEL[${step}]} ──"
     echo ""
+    # HPC: start tracking gpu usage, every -l seconds and store in gpu_log.csv
+    nvidia-smi --query-gpu=timestamp,name,index,uuid,utilization.gpu,utilization.memory,memory.used,memory.total,power.draw,pstate,clocks_throttle_reasons.active \
+           --format=csv,noheader -l 20 > ${LOG_DIR}/${STEP_LABEL[${step}]}_gpu_log.csv &
+    GPU_LOG_PID=$!
 
     if [[ "${step}" == "s0" ]]; then
         generate_and_submit "${step}" "" ""
@@ -326,6 +337,8 @@ for step in "${STEPS[@]}"; do
         done
     fi
     echo ""
+    # HPC: Stop logging
+    kill $GPU_LOG_PID
 done
 
 echo "  ─────────────────────────────────────────────────"
