@@ -38,7 +38,9 @@ REPORTS_DIR="${CHROMBPNET_DIR}/reports"
 # Override any of these by exporting before running submit_pipeline.sh.
 # =============================================================================
 CONDA_INIT="${CONDA_INIT:-${HOME}/miniconda3/etc/profile.d/conda.sh}"
-ENV_CHROMBPNET="${ENV_CHROMBPNET:-chrombpnet}"   # built by install_chrombpnet.sh
+# HPC: hpc team env location
+ENV_CHROMBPNET="/usersoftware/hpcadmin/newlinn/chrombpnet"
+#ENV_CHROMBPNET="${ENV_CHROMBPNET:-chrombpnet}"   # built by install_chrombpnet.sh
 ENV_BEDTOOLS="${ENV_BEDTOOLS:-${ENV_CHROMBPNET}}" # bedtools is included in chrombpnet
 
 # =============================================================================
