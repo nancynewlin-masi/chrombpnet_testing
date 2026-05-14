@@ -268,12 +268,11 @@ ${HP_EXPORTS}
 GPU_LOG_PID=""
 if command -v nvidia-smi >/dev/null 2>&1; then
 nvidia-smi --query-gpu=timestamp,name,index,uuid,utilization.gpu,utilization.memory,memory.used,memory.total,power.draw,pstate,clocks_throttle_reasons.active \
-  --format=csv,noheader -l 20 > "${LOG_DIR}/${step}_gpu_log.csv" 
+  --format=csv,noheader -l 2 > "${LOG_DIR}/${log_prefix}_gpulog.csv" 
 fi
 
 # HPC: This is the main script to track 
 bash "${SCRIPT_DIR}/${STEP_SCRIPT[${step}]}" 
-
 
 
 SLURM_EOF
