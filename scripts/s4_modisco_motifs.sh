@@ -33,7 +33,9 @@ fi
 echo "[OK] Input validated."
 echo ""
 
-source "${CONDA_INIT}"
+# HPC: Change source to eval to load conda
+#source "${CONDA_INIT}"
+eval "$(conda shell.bash hook)"
 conda activate "${ENV_CHROMBPNET}"
 
 modisco motifs \

@@ -38,7 +38,9 @@ echo "  Written: ${CHROM_SIZES_MAIN}  ($(wc -l < "${CHROM_SIZES_MAIN}") chromoso
 echo ""
 
 echo "[2/3] Filtering peaks against blacklist..."
-source "${CONDA_INIT}"
+# HPC: Change source to eval to load conda
+#source "${CONDA_INIT}"
+eval "$(conda shell.bash hook)"
 conda activate "${ENV_BEDTOOLS}"
 
 bedtools intersect -v \

@@ -32,7 +32,9 @@ done
 echo "[OK] All input files validated."
 echo ""
 
-source "${CONDA_INIT}"
+# HPC: Change source to eval to load conda
+#source "${CONDA_INIT}"
+eval "$(conda shell.bash hook)"
 conda activate "${ENV_CHROMBPNET}"
 module load cudnn/8.1.0-cuda11.2 2>/dev/null || true
 

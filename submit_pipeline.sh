@@ -207,7 +207,8 @@ STEP_LABEL[s4]="MoDISco motifs"
 STEP_LABEL[s5]="MoDISco reports"
 
 # Note for HPC team: change resource requests here
-STEP_GRES[s0]="gpu:a100:1";          STEP_TIME[s0]="6:00:00";     STEP_CPUS[s0]=2;               STEP_MEM[s0]="16G"
+STEP_GRES[s0]="gpu:1";          STEP_TIME[s0]="00:10:00";     STEP_CPUS[s0]=2;               STEP_MEM[s0]="16G"
+#STEP_GRES[s0]="gpu:a100:1";          STEP_TIME[s0]="6:00:00";     STEP_CPUS[s0]=2;               STEP_MEM[s0]="16G"
 STEP_GRES[s1]="${SLURM_GRES}";  STEP_TIME[s1]="${SLURM_TIME}"; STEP_CPUS[s1]="${SLURM_CPUS}"; STEP_MEM[s1]="${SLURM_MEM}"
 STEP_GRES[s2]="${SLURM_GRES}";  STEP_TIME[s2]="${SLURM_TIME}"; STEP_CPUS[s2]="${SLURM_CPUS}"; STEP_MEM[s2]="${SLURM_MEM}"
 STEP_GRES[s3]="${SLURM_GRES}";  STEP_TIME[s3]="${SLURM_TIME}"; STEP_CPUS[s3]="${SLURM_CPUS}"; STEP_MEM[s3]="${SLURM_MEM}"
@@ -220,6 +221,7 @@ STEP_GRES[s5]="gpu:a100:1";          STEP_TIME[s5]="4:00:00";     STEP_CPUS[s5]=
 DRY_COUNTER=0
 RETURN_JID=""
 SUBMISSIONS_LOG="${SUBMITTED_DIR}/submissions.log"
+GPU_LOG_PID=""
 
 generate_and_submit() {
     local step="$1"
@@ -258,11 +260,20 @@ set -euo pipefail
 export SAMPLE_NAME="${CLI_NAME}"
 export BIGWIG_FILE="${CLI_BIGWIG}"
 export PEAKS_FILE="${CLI_PEAKS}"
-export GPU_LOG_PID=""
 ${fold_export}
 ${HP_EXPORTS}
 
-bash "${SCRIPT_DIR}/${STEP_SCRIPT[${step}]}"
+# HPC: Start tracking gpu util
+
+GPU_LOG_PID=""
+if command -v nvidia-smi >/dev/null 2>&1; then
+nvidia-smi --query-gpu=timestamp,name,index,uuid,utilization.gpu,utilization.memory,memory.used,memory.total,power.draw,pstate,clocks_throttle_reasons.active \
+  --format=csv,noheader -l 20 > "${LOG_DIR}/${step}_gpu_log.csv" 
+fi
+
+# HPC: This is the main script to track 
+bash "${SCRIPT_DIR}/${STEP_SCRIPT[${step}]}" 
+
 
 
 SLURM_EOF
