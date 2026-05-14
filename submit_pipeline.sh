@@ -38,8 +38,9 @@
 # =============================================================================
 
 set -euo pipefail
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# HPC: loc for running pn hpc benchmarking
+SCRIPT_DIR=/data1/hpcadmin/newlinn/Proj_PeerBenchmark/chrombpnet_testing
+#"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ORIG_CMD="bash submit_pipeline.sh $*"
 
 # =============================================================================
@@ -67,7 +68,7 @@ SAMPLE_PEAKS[D14_NL_merged_new]="${TEST_DATA_DIR}/macs3_peaks/D14_NL_merged_peak
 # =============================================================================
 # Parse arguments
 # =============================================================================
-DRY_RUN=true #false
+DRY_RUN=false
 CLI_NAME=""
 CLI_STEP="all"
 CLI_FOLD=""
@@ -241,8 +242,6 @@ generate_and_submit() {
     if [[ -n "${STEP_GRES[${step}]}" ]]; then gres_line="#SBATCH --gres=${STEP_GRES[${step}]}"; fi
 
     cat > "${script_path}" << SLURM_EOF
-
-    
 #!/bin/bash
 #SBATCH --job-name=${job_name}
 #SBATCH --output=${LOG_DIR}/${log_prefix}.out
@@ -259,9 +258,13 @@ set -euo pipefail
 export SAMPLE_NAME="${CLI_NAME}"
 export BIGWIG_FILE="${CLI_BIGWIG}"
 export PEAKS_FILE="${CLI_PEAKS}"
+export GPU_LOG_PID=""
 ${fold_export}
 ${HP_EXPORTS}
+
 bash "${SCRIPT_DIR}/${STEP_SCRIPT[${step}]}"
+
+
 SLURM_EOF
 
     chmod +x "${script_path}"
@@ -318,10 +321,6 @@ declare -A LAST_JOBID
 for step in "${STEPS[@]}"; do
     echo "  ── Step ${step}: ${STEP_LABEL[${step}]} ──"
     echo ""
-    # HPC: start tracking gpu usage, every -l seconds and store in gpu_log.csv
-    nvidia-smi --query-gpu=timestamp,name,index,uuid,utilization.gpu,utilization.memory,memory.used,memory.total,power.draw,pstate,clocks_throttle_reasons.active \
-           --format=csv,noheader -l 20 > ${LOG_DIR}/${STEP_LABEL[${step}]}_gpu_log.csv &
-    GPU_LOG_PID=$!
 
     if [[ "${step}" == "s0" ]]; then
         generate_and_submit "${step}" "" ""
@@ -337,8 +336,7 @@ for step in "${STEPS[@]}"; do
         done
     fi
     echo ""
-    # HPC: Stop logging
-    kill $GPU_LOG_PID
+    
 done
 
 echo "  ─────────────────────────────────────────────────"
