@@ -37,7 +37,7 @@
 #   --peaks PATH       Override peaks  (auto-detected from --name)
 # =============================================================================
 
-set -euo pipefail
+set -eo pipefail
 # HPC: loc for running pn hpc benchmarking
 SCRIPT_DIR=/data1/hpcadmin/newlinn/Proj_PeerBenchmark/chrombpnet_testing
 #"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -255,7 +255,7 @@ ${gres_line}
 #SBATCH --mem=${STEP_MEM[${step}]}
 #SBATCH --time=${STEP_TIME[${step}]}
 
-set -euo pipefail
+set -eo pipefail
 
 export SAMPLE_NAME="${CLI_NAME}"
 export BIGWIG_FILE="${CLI_BIGWIG}"
@@ -266,14 +266,17 @@ ${HP_EXPORTS}
 # HPC: Start tracking gpu util
 
 GPU_LOG_PID=""
+pidfile="${LOG_DIR}/${log_prefix}.gpulogger.pid"
 if command -v nvidia-smi >/dev/null 2>&1; then
-nvidia-smi --query-gpu=timestamp,name,index,uuid,utilization.gpu,utilization.memory,memory.used,memory.total,power.draw,pstate,clocks_throttle_reasons.active \
-  --format=csv,noheader -l 2 > "${LOG_DIR}/${log_prefix}_gpulog.csv" 
+exec nvidia-smi --query-gpu=timestamp,name,index,uuid,utilization.gpu,utilization.memory,memory.used,memory.total,power.draw,pstate,clocks_throttle_reasons.active \
+  --format=csv,noheader -l 20 > "${LOG_DIR}/${log_prefix}_gpulog.csv" &
+GPU_LOG_PID=$!
 fi
 
 # HPC: This is the main script to track 
 bash "${SCRIPT_DIR}/${STEP_SCRIPT[${step}]}" 
 
+trap 'kill "$GPU_LOG_PID" 2>/dev/null || true' EXIT INT TERM
 
 SLURM_EOF
 

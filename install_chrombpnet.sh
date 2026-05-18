@@ -28,10 +28,12 @@ PIP="$(conda env list | awk -v e="${ENV_NAME}" '$1 == e {print $NF}')/bin/pip"
     hmmlearn==0.3.3 \
     tangermeme==1.0.3 \
     torch==2.4.1 \
-    bam2bw==0.4.1
+    bam2bw==0.4.1 \
+    modisco==0.5.16.0 \
+    modisco-lite==2.0.7
 
-"${PIP}" install --upgrade "modisco @ git+https://github.com/kundajelab/tfmodisco.git"
-"${PIP}" install --upgrade --force-reinstall --no-deps \
-    "modisco-lite @ git+https://github.com/SotoLF/private_tfmodisco-lite.git@patched"
+#"${PIP}" install --upgrade "modisco @ git+https://github.com/kundajelab/tfmodisco.git"
+#"${PIP}" install --upgrade --force-reinstall --no-deps \
+#    "modisco-lite @ git+https://github.com/SotoLF/private_tfmodisco-lite.git@patched"
 "${PIP}" install --upgrade --force-reinstall --no-deps \
     "memelite @ git+https://github.com/SotoLF/private_memesuite-lite.git@patched"
