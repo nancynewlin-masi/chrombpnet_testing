@@ -278,6 +278,8 @@ bash "${SCRIPT_DIR}/${STEP_SCRIPT[${step}]}"
 
 trap 'kill "$GPU_LOG_PID" 2>/dev/null || true' EXIT INT TERM
 
+python ${SCRIPT_DIR}/plot_benchmark.py --gpulogcsv=${LOG_DIR}/${log_prefix}_gpulog.csv --outputpng=${REPORTS_DIR}/${log_prefix}_gpulog.png
+
 SLURM_EOF
 
     chmod +x "${script_path}"
